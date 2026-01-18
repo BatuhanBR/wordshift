@@ -98,13 +98,6 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <head>
-        {/* Umami Analytics */}
-        <Script
-          defer
-          src="https://cloud.umami.is/script.js"
-          data-website-id="5e766215-a50a-49bb-a423-2768f445dd14"
-          strategy="afterInteractive"
-        />
         {/* Structured Data - WebSite */}
         <script
           type="application/ld+json"
@@ -216,6 +209,13 @@ export default function RootLayout({
             </AnalyticsProvider>
           </AuthProvider>
         </LanguageProvider>
+        {/* Umami Analytics */}
+        <Script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="5e766215-a50a-49bb-a423-2768f445dd14"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
