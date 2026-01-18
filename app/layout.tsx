@@ -147,19 +147,18 @@ export default function RootLayout({
                 maxValue: 2,
               },
               inLanguage: ["tr", "en"],
+              image: `${SITE_URL}/OGimage.jpg`,
+              author: {
+                "@type": "Organization",
+                name: SITE_NAME,
+                url: SITE_URL,
+              },
               offers: {
                 "@type": "Offer",
                 price: "0",
                 priceCurrency: "TRY",
                 availability: "https://schema.org/InStock",
               },
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "4.8",
-                ratingCount: "1000",
-                bestRating: "5",
-                worstRating: "1"
-              }
             }),
           }}
         />
