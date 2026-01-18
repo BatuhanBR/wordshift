@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     description: SEO_CONFIG.defaultDescription.tr,
     images: [
       {
-        url: "/og-image.png",
+        url: "/OGimage.jpg",
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} - Wordle Kelime Oyunu`,
@@ -50,20 +50,21 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SEO_CONFIG.defaultTitle.tr,
     description: SEO_CONFIG.defaultDescription.tr,
-    images: ["/og-image.png"],
+    images: ["/OGimage.jpg"],
     creator: SEO_CONFIG.twitterHandle,
   },
 
   // Icons
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "/favicon.jpg",
+    apple: "/favicon.jpg",
   },
 
-  // Verification
-  verification: {
-    google: "oSnss0_Vq-y-isgw5RBGvaXtdsuPd4XlNxKK9azibnA",
-  },
+  // Verification (Add your codes when ready)
+  // verification: {
+  //   google: "your-google-verification-code",
+  //   yandex: "your-yandex-verification-code",
+  // },
 
   // Robots
   robots: {
