@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { FriendsList } from "@/components/friends/FriendsList";
 import { DataPrivacySection } from "@/components/DataPrivacySection";
 import { Trophy, Clock, Target, Flame, BarChart2, Users, Star, Coins, ShoppingBag, Gift, Check } from "lucide-react";
-import { getNextLevelXp } from "@/lib/progress";
+import { getNextLevelXp, calculateNewProgress } from "@/lib/progress";
 import { AVATARS, FRAMES } from "@/lib/shop/shop-items";
 import { AchievementList } from "@/components/AchievementList";
 import { DailyQuest } from "@/lib/quests/types";
@@ -83,7 +83,7 @@ const defaultStats: UserStats = {
 };
 
 function ProfileContent() {
-  const { user, userData, loading, logout } = useAuth();
+  const { user, userData, loading, logout, refreshUserData } = useAuth();
   const { t, language } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -837,12 +837,34 @@ function ProfileContent() {
                     const updatedList = quests.map((q: DailyQuest) =>
                       q.id === quest.id ? { ...q, isClaimed: true } : q
                     );
+
+                    // Update total completed quests counter
+                    const counterField = questTab === "daily" ? "totalDailyQuestsCompleted" : "totalUnlimitedQuestsCompleted";
+
+                    // Calculate new level and XP with level up check
+                    const currentXp = userData?.xp || 0;
+                    const currentLevel = userData?.level || 1;
+                    const { newLevel, newXp, leveledUp } = calculateNewProgress(currentLevel, currentXp, quest.reward.xp);
+
                     await updateDoc(userRef, {
-                      xp: increment(quest.reward.xp),
+                      xp: newXp,
+                      level: newLevel,
                       coins: increment(quest.reward.coins),
-                      [targetField]: updatedList
+                      [targetField]: updatedList,
+                      [counterField]: increment(1)
                     });
+
+                    // Refresh user data immediately to update UI
+                    await refreshUserData();
+
                     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+                    // Extra confetti for level up!
+                    if (leveledUp) {
+                      setTimeout(() => {
+                        confetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+                      }, 300);
+                    }
                   } catch (error) {
                     console.error("Error claiming reward:", error);
                   } finally {
@@ -882,8 +904,8 @@ function ProfileContent() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-bold text-[#4a4a4a]">{quest.title}</h4>
-                          <p className="text-sm text-[#9a9a9a]">{quest.description}</p>
+                          <h4 className="font-bold text-[#4a4a4a]">{language === "en" ? quest.titleEn : quest.title}</h4>
+                          <p className="text-sm text-[#9a9a9a]">{language === "en" ? quest.descriptionEn : quest.description}</p>
                         </div>
                       </div>
 

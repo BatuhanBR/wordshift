@@ -1,187 +1,195 @@
-import { DailyQuest, UserQuests } from "./types";
+import { DailyQuest } from "./types";
 
-// Helper to generate a random ID
-const generateId = () => Math.random().toString(36).substring(2, 9);
-
-// Pool of potential daily quests
-const DAILY_QUEST_POOL = [
+// Daily Quest pool - her gün rastgele 3 tane seçilir
+const DAILY_QUEST_POOL: Omit<DailyQuest, "progress" | "isClaimed">[] = [
     {
-        type: "play_game",
-        translationKey: "quest_play_games",
+        id: "daily_play_1",
+        type: "play_daily",
         title: "Oyun Oyna",
-        titleEn: "Play Games",
-        description: "Günlük modda {target} oyun oyna",
-        descriptionEn: "Play {target} games in Daily mode",
-        baseTarget: 1,
-        reward: { xp: 50, coins: 25 }
+        titleEn: "Play a Game",
+        description: "Günlük modda 1 oyun oyna",
+        descriptionEn: "Play 1 game in daily mode",
+        translationKey: "quest_play_daily_1",
+        target: 1,
+        reward: { xp: 50, coins: 25 },
+        modeType: "daily"
     },
     {
-        type: "win_game",
-        translationKey: "quest_win_games",
+        id: "daily_win_1",
+        type: "win_daily",
         title: "Zafer Yolunda",
-        titleEn: "Victory Path",
-        description: "Günlük modda {target} oyun kazan",
-        descriptionEn: "Win {target} games in Daily mode",
-        baseTarget: 1,
-        reward: { xp: 100, coins: 50 }
+        titleEn: "Path to Victory",
+        description: "Günlük modda 1 oyun kazan",
+        descriptionEn: "Win 1 game in daily mode",
+        translationKey: "quest_win_daily_1",
+        target: 1,
+        reward: { xp: 100, coins: 50 },
+        modeType: "daily"
     },
     {
+        id: "daily_find_word",
         type: "find_word",
-        translationKey: "quest_find_words",
         title: "Kelime Avcısı",
         titleEn: "Word Hunter",
-        description: "Günlük modda {target} kelime bul",
-        descriptionEn: "Find {target} words in Daily mode",
-        baseTarget: 1, // Usually represents 1 daily word
-        reward: { xp: 75, coins: 35 }
+        description: "Günlük modda 1 kelime bul",
+        descriptionEn: "Find 1 word in daily mode",
+        translationKey: "quest_find_word",
+        target: 1,
+        reward: { xp: 75, coins: 35 },
+        modeType: "daily"
     }
 ];
 
-// Pool of potential unlimited/practice quests
-const PRACTICE_QUEST_POOL = [
+// Practice Quest pool
+const PRACTICE_QUEST_POOL: Omit<DailyQuest, "progress" | "isClaimed">[] = [
     {
-        type: "play_practice_6",
-        translationKey: "quest_play_practice_6",
+        id: "practice_6_letter",
+        type: "play_6_letter",
         title: "6 Harf Tutkusu",
         titleEn: "6 Letter Passion",
         description: "Sınırsız modda 6 harfli 1 oyun oyna",
-        descriptionEn: "Play a 6-letter game in Unlimited mode",
-        baseTarget: 1,
-        reward: { xp: 40, coins: 20 }
+        descriptionEn: "Play 1 game with 6 letters in unlimited mode",
+        translationKey: "quest_6_letter",
+        target: 1,
+        reward: { xp: 40, coins: 20 },
+        modeType: "practice"
     },
     {
-        type: "play_practice_7",
-        translationKey: "quest_play_practice_7",
+        id: "practice_7_letter",
+        type: "play_7_letter",
         title: "Zorlu Mücadele",
         titleEn: "Tough Challenge",
         description: "Sınırsız modda 7 harfli 1 oyun oyna",
-        descriptionEn: "Play a 7-letter game in Unlimited mode",
-        baseTarget: 1,
-        reward: { xp: 50, coins: 25 }
+        descriptionEn: "Play 1 game with 7 letters in unlimited mode",
+        translationKey: "quest_7_letter",
+        target: 1,
+        reward: { xp: 50, coins: 25 },
+        modeType: "practice"
     },
     {
+        id: "practice_win_3",
         type: "win_practice_3",
-        translationKey: "quest_win_practice_3",
         title: "Seri Katil",
-        titleEn: "Serial Killer",
+        titleEn: "Serial Winner",
         description: "Sınırsız modda 3 oyun kazan",
-        descriptionEn: "Win 3 games in Unlimited mode",
-        baseTarget: 3,
-        reward: { xp: 150, coins: 75 }
+        descriptionEn: "Win 3 games in unlimited mode",
+        translationKey: "quest_win_3",
+        target: 3,
+        reward: { xp: 150, coins: 75 },
+        modeType: "practice"
     },
     {
-        type: "play_practice_any",
-        translationKey: "quest_play_practice_any",
+        id: "practice_play_5",
+        type: "play_practice_5",
         title: "Pratik Yap",
-        titleEn: "Practice",
-        description: "Sınırsız modda toplam {target} oyun oyna",
-        descriptionEn: "Play {target} games in Unlimited mode",
-        baseTarget: 5,
-        reward: { xp: 100, coins: 50 }
+        titleEn: "Practice Makes Perfect",
+        description: "Sınırsız modda toplam 5 oyun oyna",
+        descriptionEn: "Play 5 games total in unlimited mode",
+        translationKey: "quest_play_5",
+        target: 5,
+        reward: { xp: 100, coins: 50 },
+        modeType: "practice"
     }
 ];
 
+// Shuffle array helper
+function shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// Generate daily quests (pick 3 random from pool)
 export function generateDailyQuests(): DailyQuest[] {
-    return DAILY_QUEST_POOL.map(template => ({
-        id: generateId(),
-        type: template.type,
-        translationKey: template.translationKey,
-        title: template.title,
-        titleEn: template.titleEn,
-        description: template.description.replace("{target}", template.baseTarget.toString()),
-        descriptionEn: template.descriptionEn.replace("{target}", template.baseTarget.toString()),
-        target: template.baseTarget,
+    const shuffled = shuffleArray(DAILY_QUEST_POOL);
+    return shuffled.slice(0, 3).map(quest => ({
+        ...quest,
         progress: 0,
-        reward: template.reward,
-        isClaimed: false,
-        modeType: "daily",
-        variables: { target: template.baseTarget }
+        isClaimed: false
     }));
 }
 
+// Generate practice quests (pick 4 random from pool)
 export function generatePracticeQuests(): DailyQuest[] {
-    return PRACTICE_QUEST_POOL.map(template => ({
-        id: generateId(),
-        type: template.type,
-        translationKey: template.translationKey,
-        title: template.title,
-        titleEn: template.titleEn,
-        description: template.description.replace("{target}", template.baseTarget.toString()),
-        descriptionEn: template.descriptionEn.replace("{target}", template.baseTarget.toString()),
-        target: template.baseTarget,
+    const shuffled = shuffleArray(PRACTICE_QUEST_POOL);
+    return shuffled.slice(0, 4).map(quest => ({
+        ...quest,
         progress: 0,
-        reward: template.reward,
-        isClaimed: false,
-        modeType: "practice",
-        variables: { target: template.baseTarget }
+        isClaimed: false
     }));
 }
 
-// Update quest progress based on game result
+// Game result interface for quest progress updates
+interface GameResult {
+    won: boolean;
+    wordLength: number;
+    guesses: number;
+}
+
+// Update quest progress based on game results
 export function updateQuestProgress(
     quests: DailyQuest[],
-    gameResult: { won: boolean; wordLength: number; guesses: number }
-): { updatedQuests: DailyQuest[]; completed: DailyQuest[] } {
-    const completed: DailyQuest[] = [];
+    gameResult: GameResult
+): { updatedQuests: DailyQuest[] } {
+    const { won, wordLength } = gameResult;
 
     const updatedQuests = quests.map(quest => {
         // Skip already claimed quests
-        if (quest.isClaimed) return quest;
+        if (quest.isClaimed || quest.progress >= quest.target) {
+            return quest;
+        }
 
-        let newProgress = quest.progress;
+        let shouldIncrement = false;
 
-        // Check quest type and update progress accordingly
         switch (quest.type) {
-            case "play_game":
-            case "play_practice_any":
-                // Increment for any game played
-                newProgress = quest.progress + 1;
+            // Daily mode quests
+            case "play_daily":
+                // Any daily game played
+                shouldIncrement = true;
                 break;
-
-            case "win_game":
-            case "win_practice_3":
-                // Increment only if won
-                if (gameResult.won) {
-                    newProgress = quest.progress + 1;
-                }
+            case "win_daily":
+                // Win a daily game
+                shouldIncrement = won;
                 break;
-
             case "find_word":
-                // Increment if won (found the word)
-                if (gameResult.won) {
-                    newProgress = quest.progress + 1;
-                }
+                // Find/guess a word (win)
+                shouldIncrement = won;
                 break;
 
-            case "play_practice_6":
-                // Increment if playing 6-letter mode
-                if (gameResult.wordLength === 6) {
-                    newProgress = quest.progress + 1;
-                }
+            // Practice mode quests
+            case "play_6_letter":
+                shouldIncrement = wordLength === 6;
+                break;
+            case "play_7_letter":
+                shouldIncrement = wordLength === 7;
+                break;
+            case "win_practice_3":
+            case "win_practice":
+                shouldIncrement = won;
+                break;
+            case "play_practice_5":
+            case "play_practice":
+                // Any practice game
+                shouldIncrement = true;
                 break;
 
-            case "play_practice_7":
-                // Increment if playing 7-letter mode
-                if (gameResult.wordLength === 7) {
-                    newProgress = quest.progress + 1;
-                }
-                break;
+            default:
+                // For any other quest types, just increment if game was played
+                shouldIncrement = true;
         }
 
-        // Check if quest is now complete
-        const wasComplete = quest.progress >= quest.target;
-        const isNowComplete = newProgress >= quest.target;
-
-        if (!wasComplete && isNowComplete) {
-            completed.push({ ...quest, progress: newProgress });
+        if (shouldIncrement) {
+            return {
+                ...quest,
+                progress: Math.min(quest.progress + 1, quest.target)
+            };
         }
 
-        return {
-            ...quest,
-            progress: Math.min(newProgress, quest.target)
-        };
+        return quest;
     });
 
-    return { updatedQuests, completed };
+    return { updatedQuests };
 }
-
