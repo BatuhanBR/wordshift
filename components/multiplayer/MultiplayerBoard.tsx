@@ -24,6 +24,7 @@ interface MultiplayerBoardProps {
     newElo: number;
     eloChange: number;
     opponentName: string;
+    solution: string;
   }) => void;
 }
 
@@ -176,6 +177,7 @@ export function MultiplayerBoard({ roomId, playerId, onGameEnd }: MultiplayerBoa
       newElo: eloInfo.newElo,
       eloChange: eloInfo.eloChange,
       opponentName,
+      solution,
     });
   }, [
     gameFinished,

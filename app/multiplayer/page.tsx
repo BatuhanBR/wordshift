@@ -28,6 +28,7 @@ export default function MultiplayerPage() {
     newElo: number;
     eloChange: number;
     opponentName: string;
+    solution: string;
   } | null>(null);
 
   useEffect(() => {
@@ -59,6 +60,7 @@ export default function MultiplayerPage() {
     newElo: number;
     eloChange: number;
     opponentName: string;
+    solution: string;
   }) => {
     setGameResult(result);
     setGameEnded(true);
@@ -149,6 +151,7 @@ export default function MultiplayerPage() {
           oldElo={gameResult.oldElo}
           newElo={gameResult.newElo}
           eloChange={gameResult.eloChange}
+          solution={gameResult.solution}
         />
       )}
     </div>

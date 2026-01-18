@@ -24,6 +24,7 @@ export interface MultiplayerResultModalProps {
   oldElo: number;
   newElo: number;
   eloChange: number;
+  solution: string;
 }
 
 export function MultiplayerResultModal({
@@ -37,7 +38,8 @@ export function MultiplayerResultModal({
   timeUsed,
   oldElo,
   newElo,
-  eloChange
+  eloChange,
+  solution
 }: MultiplayerResultModalProps) {
   const { t } = useLanguage();
   return (
@@ -63,12 +65,23 @@ export function MultiplayerResultModal({
               </>
             )}
           </DialogTitle>
-          <DialogDescription className="text-center text-[#9a9a9a] text-base">
-            {won
-              ? <span className="font-medium text-[#4a4a4a]">{opponentName}</span>
-              : <span className="font-medium text-[#4a4a4a]">{opponentName}</span>
-            }
-            {won ? t(" karşısında kazandın!", " - you won!") : t(" bu sefer seni yendi.", " won this time.")}
+          <DialogDescription className="text-center text-[#9a9a9a] text-base flex flex-col gap-2">
+            <div>
+              {won
+                ? <span className="font-medium text-[#4a4a4a]">{opponentName}</span>
+                : <span className="font-medium text-[#4a4a4a]">{opponentName}</span>
+              }
+              {won ? t(" karşısında kazandın!", " - you won!") : t(" bu sefer seni yendi.", " won this time.")}
+            </div>
+
+            <div className="bg-slate-100 rounded-lg p-2 mt-2">
+              <span className="text-sm text-slate-500 font-medium block mb-1 uppercase tracking-wider text-[10px]">
+                {t("Doğru Kelime", "Correct Word")}
+              </span>
+              <span className="text-xl font-bold text-slate-800 tracking-widest uppercase">
+                {solution}
+              </span>
+            </div>
           </DialogDescription>
         </DialogHeader>
 
