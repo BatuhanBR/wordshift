@@ -1,9 +1,14 @@
 export type AchievementCategory = "daily" | "unlimited" | "general" | "social" | "collection" | "mastery" | "gameplay";
 
+export interface LocalizedText {
+    tr: string;
+    en: string;
+}
+
 export interface Achievement {
     id: string;
-    title: string;
-    description: string;
+    title: LocalizedText;
+    description: LocalizedText;
     icon: string; // Emoji
     category: AchievementCategory;
     tier: "bronze" | "silver" | "gold" | "platinum";

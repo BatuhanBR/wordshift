@@ -4,8 +4,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     // --- DAILY MODE ---
     {
         id: "daily_first_win",
-        title: "İlk Günlük Zafer",
-        description: "Günlük modda ilk galibiyetini al.",
+        title: { tr: "İlk Günlük Zafer", en: "First Daily Victory" },
+        description: { tr: "Günlük modda ilk galibiyetini al.", en: "Get your first win in daily mode." },
         icon: "🌅",
         category: "daily",
         tier: "bronze",
@@ -16,8 +16,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "daily_streak_3",
-        title: "Isınma Turları",
-        description: "3 gün üst üste oyuna gir.",
+        title: { tr: "Isınma Turları", en: "Warm Up Rounds" },
+        description: { tr: "3 gün üst üste oyuna gir.", en: "Play for 3 consecutive days." },
         icon: "🔥",
         category: "daily",
         tier: "bronze",
@@ -28,8 +28,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "daily_streak_7",
-        title: "Sadık Oyuncu",
-        description: "7 gün üst üste oyuna gir.",
+        title: { tr: "Sadık Oyuncu", en: "Loyal Player" },
+        description: { tr: "7 gün üst üste oyuna gir.", en: "Play for 7 consecutive days." },
         icon: "📅",
         category: "daily",
         tier: "silver",
@@ -40,8 +40,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "daily_streak_30",
-        title: "Aylık Maraton",
-        description: "30 gün üst üste serini koru.",
+        title: { tr: "Aylık Maraton", en: "Monthly Marathon" },
+        description: { tr: "30 gün üst üste serini koru.", en: "Maintain a 30-day streak." },
         icon: "🏆",
         category: "daily",
         tier: "gold",
@@ -52,8 +52,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "daily_master",
-        title: "Günlük Rutin",
-        description: "Toplam 50 günlük oyun kazan.",
+        title: { tr: "Günlük Rutin", en: "Daily Routine" },
+        description: { tr: "Toplam 50 günlük oyun kazan.", en: "Win 50 daily games total." },
         icon: "☕",
         category: "daily",
         tier: "silver",
@@ -66,8 +66,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     // --- UNLIMITED (PRACTICE) MODE ---
     {
         id: "unlimited_novice",
-        title: "Pratik Yap",
-        description: "Sınırsız modda 10 oyun kazan.",
+        title: { tr: "Pratik Yap", en: "Practice Makes Perfect" },
+        description: { tr: "Sınırsız modda 10 oyun kazan.", en: "Win 10 games in unlimited mode." },
         icon: "🎮",
         category: "unlimited",
         tier: "bronze",
@@ -78,8 +78,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "unlimited_expert",
-        title: "Kelime Avcısı",
-        description: "Sınırsız modda 100 oyun kazan.",
+        title: { tr: "Kelime Avcısı", en: "Word Hunter" },
+        description: { tr: "Sınırsız modda 100 oyun kazan.", en: "Win 100 games in unlimited mode." },
         icon: "🏹",
         category: "unlimited",
         tier: "silver",
@@ -90,8 +90,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "unlimited_legend",
-        title: "Kelime Efsanesi",
-        description: "Sınırsız modda 500 oyun kazan.",
+        title: { tr: "Kelime Efsanesi", en: "Word Legend" },
+        description: { tr: "Sınırsız modda 500 oyun kazan.", en: "Win 500 games in unlimited mode." },
         icon: "🐲",
         category: "unlimited",
         tier: "gold",
@@ -102,8 +102,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "master_5_letters",
-        title: "5 Harf Uzmanı",
-        description: "5 harfli oyunlarda 50 galibiyet al.",
+        title: { tr: "5 Harf Uzmanı", en: "5 Letter Master" },
+        description: { tr: "5 harfli oyunlarda 50 galibiyet al.", en: "Win 50 games with 5-letter words." },
         icon: "5️⃣",
         category: "unlimited",
         tier: "silver",
@@ -114,8 +114,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "master_6_letters",
-        title: "6 Harf Uzmanı",
-        description: "6 harfli oyunlarda 50 galibiyet al.",
+        title: { tr: "6 Harf Uzmanı", en: "6 Letter Master" },
+        description: { tr: "6 harfli oyunlarda 50 galibiyet al.", en: "Win 50 games with 6-letter words." },
         icon: "6️⃣",
         category: "unlimited",
         tier: "silver",
@@ -128,8 +128,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     // --- GENERAL & COLLECTION ---
     {
         id: "level_10",
-        title: "Deneyimli",
-        description: "10. Seviyeye ulaş.",
+        title: { tr: "Deneyimli", en: "Experienced" },
+        description: { tr: "10. Seviyeye ulaş.", en: "Reach level 10." },
         icon: "⭐",
         category: "general",
         tier: "silver",
@@ -140,8 +140,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "rich_kid",
-        title: "Kasa Doldu",
-        description: "5000 Coin biriktir.",
+        title: { tr: "Kasa Doldu", en: "Money Bags" },
+        description: { tr: "5000 Coin biriktir.", en: "Collect 5000 coins." },
         icon: "💰",
         category: "collection",
         tier: "gold",
@@ -152,8 +152,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     {
         id: "collector",
-        title: "Koleksiyoner",
-        description: "5 farklı eşyaya sahip ol.",
+        title: { tr: "Koleksiyoner", en: "Collector" },
+        description: { tr: "5 farklı eşyaya sahip ol.", en: "Own 5 different items." },
         icon: "🎒",
         category: "collection",
         tier: "silver",

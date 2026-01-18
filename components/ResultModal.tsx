@@ -90,8 +90,8 @@ export function ResultModal({ open, onClose, win, modeLen, guesses, durationMs, 
               <div key={ach.id} className="bg-gradient-to-r from-[#f9c784]/20 to-[#e5a855]/20 border border-[#f9c784] rounded-xl p-3 flex items-center gap-3 shadow-sm">
                 <div className="text-2xl">{ach.icon}</div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-[#e5a855] text-sm">{ach.title}</div>
-                  <div className="text-xs text-[#9a9a9a] truncate">{ach.description}</div>
+                  <div className="font-bold text-[#e5a855] text-sm">{ach.title[language]}</div>
+                  <div className="text-xs text-[#9a9a9a] truncate">{ach.description[language]}</div>
                 </div>
                 <div className="text-xs font-bold text-[#e5a855] bg-white/50 px-2 py-1 rounded-lg">
                   +{ach.reward.coins} 💰

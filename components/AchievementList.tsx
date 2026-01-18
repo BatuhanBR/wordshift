@@ -1,11 +1,15 @@
+"use client";
+
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { ACHIEVEMENTS } from "@/lib/achievements/data";
 import { Lock, Check, Calendar, Trophy, Gift } from "lucide-react";
 import { buildUserStats } from "@/lib/achievements/manager";
 
 export function AchievementList() {
     const { userData } = useAuth();
+    const { t, language } = useLanguage();
     const [activeTab, setActiveTab] = useState<"daily" | "unlimited" | "general">("daily");
 
     if (!userData) return null;
@@ -19,19 +23,17 @@ export function AchievementList() {
         return ["general", "social", "collection", "mastery"].includes(ach.category);
     });
 
-    // Sort: Unlocked first? Or Locked first? Usually Unlocked to show progress or Locked to motivate?
-    // Let's keep original order but maybe grouping unlocked could be nice.
-    // For now strict id order defined in data.ts is better for consistency.
+    const tabs = [
+        { id: "daily", label: t("Günlük", "Daily") },
+        { id: "unlimited", label: t("Sınırsız", "Unlimited") },
+        { id: "general", label: t("Genel", "General") }
+    ];
 
     return (
         <div className="space-y-6">
             {/* Category Tabs */}
             <div className="flex p-1 bg-[#f5efe6] rounded-xl border border-[#e8e0d5]">
-                {[
-                    { id: "daily", label: "Günlük" },
-                    { id: "unlimited", label: "Sınırsız" },
-                    { id: "general", label: "Genel" }
-                ].map((tab) => (
+                {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
@@ -52,6 +54,10 @@ export function AchievementList() {
                     const progress = ach.getProgress ? ach.getProgress(currentStats) : 0;
                     const maxProgress = ach.maxProgress || 1;
                     const progressPercent = Math.min(100, (progress / maxProgress) * 100);
+
+                    // Get localized title and description
+                    const title = ach.title[language];
+                    const description = ach.description[language];
 
                     // Tier colors
                     let tierColor = "bg-slate-50 border-slate-200";
@@ -90,22 +96,22 @@ export function AchievementList() {
 
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between mb-1">
-                                        <div className="font-bold text-[#4a4a4a] truncate pr-2 text-base">{ach.title}</div>
+                                        <div className="font-bold text-[#4a4a4a] truncate pr-2 text-base">{title}</div>
                                         {isUnlocked && (
                                             <div className="shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-bold text-emerald-600 flex items-center gap-1">
                                                 <Check className="h-3 w-3" />
-                                                <span>Tamamlandı</span>
+                                                <span>{t("Tamamlandı", "Completed")}</span>
                                             </div>
                                         )}
                                     </div>
 
-                                    <div className="text-sm text-[#8a8a8a] mb-3 leading-snug">{ach.description}</div>
+                                    <div className="text-sm text-[#8a8a8a] mb-3 leading-snug">{description}</div>
 
                                     {/* Progress Bar */}
                                     {!isUnlocked && ach.maxProgress && ach.maxProgress > 1 && (
                                         <div className="space-y-1.5 mb-3">
                                             <div className="flex justify-between text-xs font-bold text-[#9a9a9a]">
-                                                <span>İlerleme</span>
+                                                <span>{t("İlerleme", "Progress")}</span>
                                                 <span>{Math.floor(progress)} / {maxProgress}</span>
                                             </div>
                                             <div className="h-2.5 w-full rounded-full bg-[#f0f0f0] overflow-hidden border border-black/5">
@@ -130,8 +136,8 @@ export function AchievementList() {
                                             <div className="flex items-center gap-1 bg-gradient-to-r from-[#c4b5e0] to-[#9d8bc7] text-white px-2 py-1 rounded-lg shadow-sm border border-white/20">
                                                 <Gift className="h-3 w-3" />
                                                 <span>
-                                                    {ach.reward.item.type === "avatar" ? "Özel Avatar" :
-                                                        ach.reward.item.type === "frame" ? "Özel Çerçeve" : "Özel Tema"}
+                                                    {ach.reward.item.type === "avatar" ? t("Özel Avatar", "Special Avatar") :
+                                                        ach.reward.item.type === "frame" ? t("Özel Çerçeve", "Special Frame") : t("Özel Tema", "Special Theme")}
                                                 </span>
                                             </div>
                                         )}
@@ -140,7 +146,7 @@ export function AchievementList() {
                                     {isUnlocked && unlockedData?.unlockedAt && (
                                         <div className="mt-3 pt-3 border-t border-black/5 text-[10px] text-[#c4c4c4] flex items-center gap-1 font-medium">
                                             <Calendar className="h-3 w-3" />
-                                            Kazanıldı: {new Date(unlockedData.unlockedAt).toLocaleDateString("tr-TR")}
+                                            {t("Kazanıldı:", "Unlocked:")} {new Date(unlockedData.unlockedAt).toLocaleDateString(language === "en" ? "en-US" : "tr-TR")}
                                         </div>
                                     )}
                                 </div>
@@ -152,7 +158,7 @@ export function AchievementList() {
 
             {filteredAchievements.length === 0 && (
                 <div className="text-center py-12 text-[#9a9a9a]">
-                    Bu kategoride henüz başarım yok.
+                    {t("Bu kategoride henüz başarım yok.", "No achievements in this category yet.")}
                 </div>
             )}
         </div>
