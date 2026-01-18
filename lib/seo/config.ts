@@ -19,6 +19,14 @@ export const TARGET_KEYWORDS = {
         "wordle oyna",
         "multiplayer kelime oyunu",
         "wordshift",
+        // Long-tail keywords
+        "çok oyunculu kelime oyunu",
+        "arkadaşla kelime yarışması",
+        "5 harfli kelime bulmaca sınırsız",
+        "7 harfli kelime oyunu zor",
+        "rekabetçi kelime oyunları",
+        "kelime oyunu görev sistemi",
+        "online arkadaşla oynanan kelime oyunu",
     ],
     en: [
         "daily word game",
@@ -31,6 +39,13 @@ export const TARGET_KEYWORDS = {
         "word game free",
         "online wordle",
         "wordshift",
+        // Long-tail keywords
+        "multiplayer wordle alternative",
+        "4-7 letter word game online",
+        "competitive word puzzle with quests",
+        "wordle with friends real-time",
+        "daily word shift puzzle",
+        "wordshift multiplayer battle",
     ]
 };
 
@@ -129,12 +144,12 @@ export const PAGE_METADATA = {
     },
     multiplayer: {
         tr: {
-            title: "Multiplayer Wordle - Canlı Kelime Yarışması | WordShift",
-            description: "Multiplayer wordle kelime oyunu! Gerçek rakiplerle canlı yarış. ELO puan sistemi, sıralamada yüksel! WordShift'te oyna!"
+            title: "Çok Oyunculu Kelime Yarışması - Arkadaşla Wordle Oyna | WordShift",
+            description: "Arkadaşla kelime yarışması oyna! Çok oyunculu wordle alternatifi. Gerçek rakiplerle canlı rekabetçi kelime oyunu, ELO sıralaması. Ücretsiz!"
         },
         en: {
-            title: "Multiplayer Word Game - Live Word Battle | WordShift",
-            description: "Multiplayer word puzzle game! Battle real opponents live. ELO ranking system. Play on WordShift!"
+            title: "Multiplayer Wordle Alternative - Battle Friends Live | WordShift",
+            description: "Best multiplayer wordle alternative! Play word puzzle with friends real-time. Competitive word game with ELO ranking. Free to play!"
         }
     },
     leaderboard: {
