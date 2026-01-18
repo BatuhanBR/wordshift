@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+:root {
+  /* Cozy Pastel Theme */
+  --background: #fdf8f3;
+  --background-secondary: #f5efe6;
+  --foreground: #4a4a4a;
+  --foreground-muted: #7a7a7a;
+  
+  /* Card colors */
+  --card-bg: #ffffff;
+  --card-border: #e8e0d5;
+  --card-shadow: rgba(0, 0, 0, 0.06);
+  
+  /* Pastel accent colors */
+  --pastel-green: #a8d5a2;
+  --pastel-green-dark: #7bc275;
+  --pastel-orange: #f9c784;
+  --pastel-orange-dark: #e5a855;
+  --pastel-purple: #c4b5e0;
+  --pastel-purple-dark: #9d8bc7;
+  --pastel-blue: #a7c7e7;
+  --pastel-blue-dark: #7ba7d1;
+  --pastel-pink: #f5c6d6;
+  --pastel-pink-dark: #e89db8;
+  --pastel-red: #e8a0a0;
+  --pastel-coral: #f0b8a8;
+  
+  /* Wordle cell colors */
+  --cell-correct: #8fbc8f;
+  --cell-present: #deb887;
+  --cell-absent: #d3d3d3;
+  --cell-empty: #ffffff;
+  --cell-border: #d4cfc7;
+  
+  /* Letter tile rainbow colors */
+  --tile-1: #c8e6c9;
+  --tile-2: #ffe0b2;
+  --tile-3: #d1c4e9;
+  --tile-4: #b3e5fc;
+  --tile-5: #f8bbd9;
+  --tile-6: #c5cae9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* Force light theme - override system preference */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Global cursor pointer for interactive elements */
+button, a, [role="button"], .cursor-pointer {
+  cursor: pointer;
+}
+
+button:not(:disabled):hover, a:hover {
+  cursor: pointer;
+}
+
+/* Cozy Card Style */
+.cozy-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px var(--card-shadow);
+}
+
+/* Soft shadow utilities */
+.shadow-soft {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-soft-lg {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Pastel button styles */
+.btn-pastel-green {
+  background: linear-gradient(135deg, var(--pastel-green) 0%, var(--pastel-green-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.btn-pastel-purple {
+  background: linear-gradient(135deg, var(--pastel-purple) 0%, var(--pastel-purple-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.btn-pastel-orange {
+  background: linear-gradient(135deg, var(--pastel-orange) 0%, var(--pastel-orange-dark) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Word reveal animations - Cozy Colors */
+@keyframes flip {
+  0% { transform: rotateX(0deg) translateZ(0); }
+  50% { transform: rotateX(90deg) translateZ(0); }
+  100% { transform: rotateX(0deg) translateZ(0); }
+}
+
+@keyframes pop {
+  0% { transform: scale(1) translateZ(0); }
+  50% { transform: scale(1.08) translateZ(0); }
+  100% { transform: scale(1) translateZ(0); }
+}
+
+.cell {
+  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, background-color, border-color;
+  contain: layout style paint;
+  transform: translateZ(0);
+  border-radius: 10px;
+}
+
+.cell-pop {
+  animation: pop 120ms ease;
+}
+
+/* Reveal animations with cozy pastel colors */
+@keyframes reveal-correct {
+  0% { transform: rotateX(0deg) translateZ(0); background-color: #ffffff; border-color: #d4cfc7; color: #4a4a4a; }
+  49% { background-color: #ffffff; border-color: #d4cfc7; color: #4a4a4a; }
+  50% { transform: rotateX(90deg) translateZ(0); }
+  51% { background-color: #8fbc8f; border-color: #8fbc8f; color: #ffffff; }
+  100% { transform: rotateX(0deg) translateZ(0); background-color: #8fbc8f; border-color: #8fbc8f; color: #ffffff; }
+}
+
+@keyframes reveal-present {
+  0% { transform: rotateX(0deg) translateZ(0); background-color: #ffffff; border-color: #d4cfc7; color: #4a4a4a; }
+  49% { background-color: #ffffff; border-color: #d4cfc7; color: #4a4a4a; }
+  50% { transform: rotateX(90deg) translateZ(0); }
+  51% { background-color: #deb887; border-color: #deb887; color: #ffffff; }
+  100% { transform: rotateX(0deg) translateZ(0); background-color: #deb887; border-color: #deb887; color: #ffffff; }
+}
+
+@keyframes reveal-absent {
+  0% { transform: rotateX(0deg) translateZ(0); background-color: #ffffff; border-color: #d4cfc7; color: #4a4a4a; }
+  49% { background-color: #ffffff; border-color: #d4cfc7; color: #4a4a4a; }
+  50% { transform: rotateX(90deg) translateZ(0); }
+  51% { background-color: #d3d3d3; border-color: #d3d3d3; color: #6a6a6a; }
+  100% { transform: rotateX(0deg) translateZ(0); background-color: #d3d3d3; border-color: #d3d3d3; color: #6a6a6a; }
+}
+
+.cell-anim-correct { 
+  animation: reveal-correct 350ms cubic-bezier(.2,.8,.2,1) forwards;
+  will-change: transform, background-color, border-color;
+}
+.cell-anim-present { 
+  animation: reveal-present 350ms cubic-bezier(.2,.8,.2,1) forwards;
+  will-change: transform, background-color, border-color;
+}
+.cell-anim-absent { 
+  animation: reveal-absent 350ms cubic-bezier(.2,.8,.2,1) forwards;
+  will-change: transform, background-color, border-color;
+}
+
+/* Shake for invalid guesses */
+@keyframes shake {
+  0% { transform: translateX(0) translateZ(0); }
+  20% { transform: translateX(-6px) translateZ(0); }
+  40% { transform: translateX(6px) translateZ(0); }
+  60% { transform: translateX(-4px) translateZ(0); }
+  80% { transform: translateX(4px) translateZ(0); }
+  100% { transform: translateX(0) translateZ(0); }
+}
+.row-shake { animation: shake 450ms ease; }
+
+/* Cozy gradient backgrounds */
+.cozy-gradient {
+  background: linear-gradient(135deg, #fdf8f3 0%, #f5efe6 50%, #fef9f3 100%);
+}
+
+/* Decorative leaf/plant pattern (subtle) */
+.cozy-pattern {
+  background-image: 
+    radial-gradient(circle at 10% 90%, rgba(168, 213, 162, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(196, 181, 224, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 90% 90%, rgba(167, 199, 231, 0.1) 0%, transparent 30%);
+}
+
+/* Ready badge style */
+.badge-ready {
+  background: linear-gradient(135deg, var(--pastel-green) 0%, var(--pastel-green-dark) 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Player avatar placeholder */
+.avatar-circle {
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
