@@ -11,15 +11,15 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-    language: "tr",
+    language: "en",
     setLanguage: () => { },
-    t: (trText) => trText,
+    t: (trText, enText) => enText,
 });
 
 export const useLanguage = () => useContext(LanguageContext);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-    const [language, setLanguageState] = useState<Language>("tr");
+    const [language, setLanguageState] = useState<Language>("en");
     const [mounted, setMounted] = useState(false);
 
     // Load language preference from localStorage on mount
