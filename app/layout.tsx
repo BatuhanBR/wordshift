@@ -60,11 +60,10 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
 
-  // Verification (Add your codes when ready)
-  // verification: {
-  //   google: "your-google-verification-code",
-  //   yandex: "your-yandex-verification-code",
-  // },
+  // Verification
+  verification: {
+    google: "oSnss0_Vq-y-isgw5RBGvaXtdsuPd4XlNxKK9azibnA",
+  },
 
   // Robots
   robots: {
