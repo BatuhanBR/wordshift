@@ -38,7 +38,7 @@ export const Cell = React.memo(function Cell({ letter = "", state = "empty", rev
 
     const anim = !revealed && state !== "empty"
         ? state === "correct"
-            ? "cell-anim-correct" // You might need to update keyframes in global css if they use specific colors
+            ? "cell-anim-correct"
             : state === "present"
                 ? "cell-anim-present"
                 : "cell-anim-absent"

@@ -23,6 +23,9 @@ const ATTEMPTS = 6;
 export function Board({ initialLen, modeType = "daily" }: { initialLen?: number; modeType?: "daily" | "practice" } = {}) {
     const { user, userData, refreshUserData } = useAuth();
     const { language, t } = useLanguage();
+
+    // Get user's equipped theme
+    const userTheme = userData?.equipped?.theme || "default";
     const [wordLength, setWordLength] = useState<number>(5);
     const [rows, setRows] = useState<string[][]>(Array.from({ length: ATTEMPTS }, () => []));
     const [rowStates, setRowStates] = useState<(LetterState | "empty")[][]>([]);
@@ -208,6 +211,10 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                     if (user && userData) {
                         const durationMs = Date.now() - startTime;
 
+                        // CRITICAL: Use actual solution length, not wordLength state!
+                        // wordLength state can change during gameplay, but solution.length is the truth
+                        const actualWordLength = solution?.length || wordLength;
+
                         // 1. Daily Limit Check
                         const todayStr = new Date().toISOString().split('T')[0];
                         const dailyHistory: {
@@ -223,7 +230,7 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                         }
 
                         // Bu mod bugün oynanmış kazanılmış mı?
-                        const alreadyWonToday = dailyHistory.modes?.[wordLength];
+                        const alreadyWonToday = dailyHistory.modes?.[actualWordLength];
 
                         let xpToAdd = 0;
                         let coinsToAdd = 0;
@@ -232,9 +239,9 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                         if (!dailyHistory.modes) dailyHistory.modes = {};
                         if (!dailyHistory.stats) dailyHistory.stats = {};
 
-                        // Sadece bu mod için true yapıyoruz
-                        dailyHistory.modes[wordLength] = true;
-                        dailyHistory.stats[wordLength] = {
+                        // Sadece bu mod için true yapıyoruz - use actual word length!
+                        dailyHistory.modes[actualWordLength] = true;
+                        dailyHistory.stats[actualWordLength] = {
                             guesses: currentRow + 1,
                             durationMs: durationMs,
                             solution: solution || "",
@@ -245,7 +252,7 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                         // Sadece kazanırsa ve bugün ilk kez kazanıyorsa ödül ver
                         if (won) {
                             const rewards = calculateGameRewards(
-                                wordLength,
+                                actualWordLength,
                                 true,
                                 (ATTEMPTS - currentRow) * 50,
                                 currentRow + 1,
@@ -269,7 +276,7 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                         if (userData?.dailyQuests?.daily) {
                             const { updatedQuests } = updateQuestProgress(userData.dailyQuests.daily, {
                                 won: won,
-                                wordLength: wordLength,
+                                wordLength: actualWordLength,
                                 guesses: currentRow + 1
                             });
                             questUpdates = { "dailyQuests.daily": updatedQuests };
@@ -297,19 +304,26 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                                 // If lastWin is already todayStr, don't increment
                             }
 
-                            await updateDoc(userRef, {
-                                xp: newXp,
-                                level: newLevel,
+                            // Build update object - CRITICAL: xp must use increment!
+                            const updateObj: any = {
+                                xp: increment(xpToAdd), // Use increment, not set!
                                 coins: increment(coinsToAdd),
                                 dailyHistory: dailyHistory,
                                 dailyStreak: newStreak,
                                 lastDailyWin: won && modeType === "daily" ? todayStr : (userData.lastDailyWin || null),
                                 ...(won && modeType === "daily" ? {
                                     [`dailyWins_${language}`]: increment(1),
-                                    [`wins${wordLength}_${language}`]: increment(1)
+                                    [`wins${actualWordLength}_${language}`]: increment(1)
                                 } : {}),
                                 ...questUpdates
-                            });
+                            };
+
+                            // Only update level if it changed
+                            if (newLevel > currentLevel) {
+                                updateObj.level = newLevel;
+                            }
+
+                            await updateDoc(userRef, updateObj);
 
                             // Achievement Check (Only on Win)
                             if (userData && won) {
@@ -317,7 +331,7 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                                 // Manual update for immediate check
                                 currentStats.totalWins = (currentStats.totalWins || 0) + 1;
                                 currentStats.dailyWins = (currentStats.dailyWins || 0) + 1;
-                                (currentStats as any)[`wins${wordLength}`] = ((currentStats as any)[`wins${wordLength}`] || 0) + 1;
+                                (currentStats as any)[`wins${actualWordLength}`] = ((currentStats as any)[`wins${actualWordLength}`] || 0) + 1;
                                 currentStats.coins = (currentStats.coins || 0) + coinsToAdd;
                                 currentStats.dailyStreak = newStreak;
                                 if (!currentStats.bestTimeMs || durationMs < currentStats.bestTimeMs) {
@@ -335,7 +349,7 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                             if (won && modeType === "daily" && !alreadyWonToday) {
                                 const statsRef = doc(db, "stats", "daily");
                                 await setDoc(statsRef, {
-                                    [`${todayStr}_${wordLength}`]: increment(1)
+                                    [`${todayStr}_${actualWordLength}`]: increment(1)
                                 }, { merge: true });
                             }
 
@@ -347,7 +361,7 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                         try {
                             await saveGameResult({
                                 userId: user.uid,
-                                modeLen: wordLength,
+                                modeLen: actualWordLength,
                                 modeType,
                                 language: language as "tr" | "en",
                                 won,
@@ -510,6 +524,10 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
         (key: string) => {
             if (gameOver || revealing) return;
             const cur = rows[currentRow];
+
+            // Safety check: prevent undefined errors during race conditions
+            if (!cur) return;
+
             if (key === "enter") {
                 if (cur.length === wordLength) commitRow();
                 return;
@@ -517,7 +535,10 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
             if (key === "back") {
                 setRows((prev) => {
                     const copy = prev.map((r) => [...r]);
-                    copy[currentRow].pop();
+                    // Safety check: ensure array exists before calling pop()
+                    if (copy[currentRow] && copy[currentRow].length > 0) {
+                        copy[currentRow].pop();
+                    }
                     return copy;
                 });
                 return;
@@ -528,7 +549,10 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                 if (cur.length >= wordLength) return;
                 setRows((prev) => {
                     const copy = prev.map((r) => [...r]);
-                    copy[currentRow].push(key);
+                    // Safety check: ensure array exists before pushing
+                    if (copy[currentRow]) {
+                        copy[currentRow].push(key);
+                    }
                     return copy;
                 });
             }
@@ -604,49 +628,54 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
     return (
         <div className="flex flex-col items-center">
             {/* Already played today - blocked */}
-            {dailyStats && modeType === "daily" && (
-                <div className="fixed inset-0 z-[2000] bg-[#fdf8f3]/85 backdrop-blur-sm flex items-center justify-center">
-                    <div className="bg-white rounded-3xl shadow-soft-lg border border-[#e8e0d5] p-8 max-w-md mx-4 text-center">
-                        <div className="text-6xl mb-4">
-                            {dailyStats.won ? "�" : "😔"}
-                        </div>
-                        <h2 className="text-2xl font-bold text-[#4a4a4a] mb-2">
-                            {dailyStats.won ? "Tebrikler!" : "Maalesef Bilemedin"}
-                        </h2>
-                        <p className="text-[#9a9a9a] mb-6">
-                            {wordLength} harfli günlük kelimeyi {dailyStats.won ? "başarıyla çözdün." : "çözemedin."}
-                        </p>
+            {dailyStats && modeType === "daily" && (() => {
+                // Calculate the actual word length that was played from the solution
+                const playedWordLength = dailyStats.solution?.length || wordLength;
 
-                        <div className="bg-[#f5efe6] rounded-xl p-4 mb-6 grid grid-cols-2 gap-4">
-                            <div className="text-center">
-                                <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Kelime</div>
-                                <div className="text-xl font-bold text-[#8fbc8f] tracking-wider">{dailyStats.solution}</div>
+                return (
+                    <div className="fixed inset-0 z-[2000] bg-[#fdf8f3]/85 backdrop-blur-sm flex items-center justify-center">
+                        <div className="bg-white rounded-3xl shadow-soft-lg border border-[#e8e0d5] p-8 max-w-md mx-4 text-center">
+                            <div className="text-6xl mb-4">
+                                {dailyStats.won ? "🎉" : "😔"}
                             </div>
-                            <div className="text-center">
-                                <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Tahmin</div>
-                                <div className="text-xl font-bold text-[#f9c784]">{dailyStats.guesses}/6</div>
-                            </div>
-                            <div className="col-span-2 text-center border-t border-[#e8e0d5] pt-3 mt-1">
-                                <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Son Tahmin</div>
-                                <div className="text-lg font-bold text-[#f9c784] tracking-widest">{dailyStats.lastGuess || "-"}</div>
-                            </div>
-                            <div className="col-span-2 text-center border-t border-[#e8e0d5] pt-3 mt-1">
-                                <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Süre</div>
-                                <div className="text-lg font-semibold text-[#c4b5e0]">{(dailyStats.durationMs / 1000).toFixed(1)}s</div>
-                            </div>
-                        </div>
+                            <h2 className="text-2xl font-bold text-[#4a4a4a] mb-2">
+                                {dailyStats.won ? "Tebrikler!" : "Maalesef Bilemedin"}
+                            </h2>
+                            <p className="text-[#9a9a9a] mb-6">
+                                {playedWordLength} harfli günlük kelimeyi {dailyStats.won ? "başarıyla çözdün." : "çözemedin."}
+                            </p>
 
-                        <div className="flex gap-3 justify-center">
-                            <a href="/" className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#c4b5e0] to-[#9d8bc7] text-white font-semibold shadow-soft hover:opacity-90 transition">
-                                🏠 {t("Ana Sayfa", "Home")}
-                            </a>
-                            <a href="/oyna/pratik" className="px-6 py-3 rounded-xl bg-white border-2 border-[#e8e0d5] text-[#6a6a6a] font-semibold hover:bg-[#f5efe6] transition">
-                                ✨ {t("Sınırsız Mod", "Unlimited Mode")}
-                            </a>
+                            <div className="bg-[#f5efe6] rounded-xl p-4 mb-6 grid grid-cols-2 gap-4">
+                                <div className="text-center">
+                                    <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Kelime</div>
+                                    <div className="text-xl font-bold text-[#8fbc8f] tracking-wider">{dailyStats.solution}</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Tahmin</div>
+                                    <div className="text-xl font-bold text-[#f9c784]">{dailyStats.guesses}/6</div>
+                                </div>
+                                <div className="col-span-2 text-center border-t border-[#e8e0d5] pt-3 mt-1">
+                                    <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Son Tahmin</div>
+                                    <div className="text-lg font-bold text-[#f9c784] tracking-widest">{dailyStats.lastGuess || "-"}</div>
+                                </div>
+                                <div className="col-span-2 text-center border-t border-[#e8e0d5] pt-3 mt-1">
+                                    <div className="text-xs text-[#9a9a9a] font-bold uppercase mb-1">Süre</div>
+                                    <div className="text-lg font-semibold text-[#c4b5e0]">{(dailyStats.durationMs / 1000).toFixed(1)}s</div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 justify-center">
+                                <a href="/" className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#c4b5e0] to-[#9d8bc7] text-white font-semibold shadow-soft hover:opacity-90 transition">
+                                    🏠 {t("Ana Sayfa", "Home")}
+                                </a>
+                                <a href="/oyna/pratik" className="px-6 py-3 rounded-xl bg-white border-2 border-[#e8e0d5] text-[#6a6a6a] font-semibold hover:bg-[#f5efe6] transition">
+                                    ✨ {t("Sınırsız Mod", "Unlimited Mode")}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
             {/* Guest Lock Overlay */}
             {guestLocked && modeType === "daily" && (
                 <div className="fixed inset-0 z-[3000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -728,7 +757,7 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
                 </button>
             </div>
 
-            <Keyboard onKey={onKey} letterHints={letterHints} disabledLetters={eliminatedLetters} />
+            <Keyboard onKey={onKey} letterHints={letterHints} disabledLetters={eliminatedLetters} themeId={userTheme} />
             {gameOver && solution && (
                 <div className="mt-4 text-center">
                     <div className="text-sm text-neutral-400">

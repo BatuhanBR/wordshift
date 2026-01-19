@@ -4,6 +4,7 @@ import React from "react";
 import type { LetterState } from "@/lib/game/engine";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getThemeColors } from "@/lib/theme/theme-config";
 
 // Turkish keyboard layout
 const TR_ROWS = [
@@ -23,11 +24,13 @@ interface KeyboardProps {
     onKey: (key: string) => void;
     letterHints?: Record<string, LetterState>;
     disabledLetters?: string[];
+    themeId?: string;
 }
 
-export function Keyboard({ onKey, letterHints = {}, disabledLetters = [] }: KeyboardProps) {
+export function Keyboard({ onKey, letterHints = {}, disabledLetters = [], themeId = "default" }: KeyboardProps) {
     const { language } = useLanguage();
     const ROWS = language === "en" ? EN_ROWS : TR_ROWS;
+    const theme = getThemeColors(themeId);
 
     return (
         <div className="mt-8 select-none">
@@ -42,15 +45,31 @@ export function Keyboard({ onKey, letterHints = {}, disabledLetters = [] }: Keyb
                             isDisabled && "opacity-20 pointer-events-none bg-neutral-200 shadow-none border border-transparent",
                             !isDisabled && state === "correct" && "bg-gradient-to-br from-[#8fbc8f] to-[#6a9a6a] text-white shadow-soft hover:opacity-90",
                             !isDisabled && state === "present" && "bg-gradient-to-br from-[#f9c784] to-[#e5a855] text-white shadow-soft hover:opacity-90",
-                            !isDisabled && state === "absent" && "bg-[#e0e0e0] text-[#888] border border-[#d4d4d4]",
-                            !isDisabled && !state && "bg-white text-[#4a4a4a] border border-[#e8e0d5] hover:bg-[#f5efe6] hover:scale-105 active:scale-95"
+                            !isDisabled && state === "absent" && "border",
+                            !isDisabled && !state && "border hover:scale-105 active:scale-95"
                         );
+
+                        // Dynamic styles based on theme
+                        const dynamicStyle: React.CSSProperties = {};
+                        if (!isDisabled) {
+                            if (state === "absent") {
+                                dynamicStyle.backgroundColor = theme.tileAbsent;
+                                dynamicStyle.color = theme.tileText;
+                                dynamicStyle.borderColor = theme.tileBorder;
+                            } else if (!state) {
+                                dynamicStyle.backgroundColor = theme.tileEmpty;
+                                dynamicStyle.color = theme.keyText;
+                                dynamicStyle.borderColor = theme.tileBorder;
+                            }
+                        }
+
                         const label = k === "back" ? "⌫" : k;
                         const grow = k === "enter" || k === "back" ? "flex-[1.5]" : "flex-1";
                         return (
                             <button
                                 key={k}
                                 className={cn(cls, grow)}
+                                style={dynamicStyle}
                                 onClick={() => onKey(k)}
                                 disabled={isDisabled}
                                 type="button"

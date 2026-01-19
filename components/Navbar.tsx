@@ -42,9 +42,9 @@ export function Navbar() {
   return (
     <>
       <DailyQuestsModal isOpen={questsOpen} onClose={() => setQuestsOpen(false)} />
-      <header className="relative z-[2000] mx-auto flex w-full max-w-[1600px] items-center justify-between px-10 py-6">
+      <header className="relative z-[2000] mx-auto flex w-full max-w-[1600px] items-center justify-between px-2 py-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group flex-shrink-0" style={{ minWidth: '200px' }}>
+        <Link href="/" className="flex items-center gap-2 group flex-shrink-0" style={{ minWidth: '180px' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.svg?v=5"

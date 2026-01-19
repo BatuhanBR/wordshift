@@ -12,7 +12,7 @@ interface RowProps {
 
 export const Row = React.memo(function Row({ letters, states = [], wordLength }: RowProps) {
     const hasReveal = useMemo(() => states.some((s) => s !== "empty"), [states]);
-    
+
     return (
         <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${wordLength}, minmax(0, 1fr))`, perspective: "1000px" }}>
             {Array.from({ length: wordLength }).map((_, i) => (
@@ -26,5 +26,3 @@ export const Row = React.memo(function Row({ letters, states = [], wordLength }:
         </div>
     );
 });
-
-

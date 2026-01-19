@@ -24,6 +24,7 @@ import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import { usePresence } from "@/hooks/usePresence";
 import { UserQuests } from "@/lib/quests/types";
 import { generateDailyQuests, generatePracticeQuests } from "@/lib/quests/manager";
+import { calculateNewProgress, getNextLevelXp } from "@/lib/progress";
 
 export interface UserData {
   displayName: string;
@@ -115,6 +116,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (snap.exists()) {
         const data = snap.data() as UserData;
+
+        // CRITICAL: Auto-correct level based on XP
+        const currentXp = data.xp || 0;
+        const currentLevel = data.level || 1;
+        const nextLevelXp = getNextLevelXp(currentLevel);
+
+        // Check if user should have leveled up but didn't
+        if (currentXp >= nextLevelXp) {
+          console.log(`[Level Auto-Fix] User has ${currentXp} XP but at level ${currentLevel}. Recalculating...`);
+          const { newLevel, newXp } = calculateNewProgress(currentLevel, 0, currentXp);
+
+          console.log(`[Level Auto-Fix] Correcting to level ${newLevel} with ${newXp} XP`);
+
+          // Update database with corrected values
+          await updateDoc(userRef, {
+            level: newLevel,
+            xp: newXp
+          }).catch(err => console.error("Error auto-fixing level:", err));
+
+          // Update local data
+          data.level = newLevel;
+          data.xp = newXp;
+        }
+
         setUserData(data);
         setIsPremium(Boolean(data.isPremium) || data.plan === "premium");
 

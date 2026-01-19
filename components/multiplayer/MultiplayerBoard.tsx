@@ -295,6 +295,9 @@ export function MultiplayerBoard({ roomId, playerId, onGameEnd }: MultiplayerBoa
       if (gameOver || revealing) return;
       const cur = rows[currentRow];
 
+      // Safety check: prevent undefined errors during race conditions
+      if (!cur) return;
+
       if (key === "enter") {
         if (cur.length === wordLength) commitRow();
         return;
@@ -302,7 +305,10 @@ export function MultiplayerBoard({ roomId, playerId, onGameEnd }: MultiplayerBoa
       if (key === "back") {
         setRows((prev) => {
           const copy = prev.map((r) => [...r]);
-          copy[currentRow].pop();
+          // Safety check: ensure array exists before calling pop()
+          if (copy[currentRow] && copy[currentRow].length > 0) {
+            copy[currentRow].pop();
+          }
           return copy;
         });
         return;
@@ -311,7 +317,10 @@ export function MultiplayerBoard({ roomId, playerId, onGameEnd }: MultiplayerBoa
         if (cur.length >= wordLength) return;
         setRows((prev) => {
           const copy = prev.map((r) => [...r]);
-          copy[currentRow].push(key);
+          // Safety check: ensure array exists before pushing
+          if (copy[currentRow]) {
+            copy[currentRow].push(key);
+          }
           return copy;
         });
       }

@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export function DailyQuestsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-    const { user, userData } = useAuth();
+    const { user, userData, refreshUserData } = useAuth();
     const { t } = useLanguage();
     const [claiming, setClaiming] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<"daily" | "practice">("daily");
@@ -43,6 +43,9 @@ export function DailyQuestsModal({ isOpen, onClose }: { isOpen: boolean; onClose
                 [targetField]: updatedList,
                 [statsField]: increment(1)
             });
+
+            // Refresh user data to update UI immediately
+            await refreshUserData();
 
             confetti({
                 particleCount: 100,
