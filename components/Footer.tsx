@@ -99,22 +99,14 @@ export function Footer() {
                                     {t("Lisanslar", "Licenses")}
                                 </Link>
                             </li>
-                            <li>
-                                <a href="mailto:info@gunlukkelime.com" className="text-sm text-[#7a7a7a] hover:text-[#8fbc8f] transition-colors">
-                                    {t("İletişim", "Contact")}
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="mt-10 pt-6 border-t border-[#e8e0d5] flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="mt-10 pt-6 border-t border-[#e8e0d5] flex items-center justify-center">
                     <p className="text-sm text-[#9a9a9a]">
                         © {new Date().getFullYear()} {t("Günlük Kelime", "Daily Word")}. {t("Tüm hakları saklıdır.", "All rights reserved.")}
-                    </p>
-                    <p className="text-sm text-[#9a9a9a] flex items-center gap-1">
-                        {t("Sevgiyle yapıldı", "Made with")} <Heart className="w-4 h-4 text-[#e8a0a0] fill-current" /> {t("Türkiye'de", "in Turkey")}
                     </p>
                 </div>
             </div>

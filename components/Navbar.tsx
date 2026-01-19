@@ -82,7 +82,7 @@ export function Navbar() {
           </Link>
 
           {/* Leaderboard */}
-          <Link href="/leaderboard" onClick={(e) => handleRestrictedClick(e, "/leaderboard")}>
+          <Link href="/leaderboard">
             <Button variant="ghost" className="h-11 px-5 text-base text-[#6a6a6a] hover:text-[#4a4a4a] hover:bg-[#f5efe6] rounded-full">
               <Trophy className="mr-2 h-5 w-5 text-[#f9c784]" />
               {t("Sıralama", "Leaderboard")}
