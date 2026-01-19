@@ -96,10 +96,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr">
-      <head>
+    <html lang="tr" suppressHydrationWarning>
+      <head suppressHydrationWarning>
         {/* Structured Data - WebSite */}
         <script
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -120,6 +121,7 @@ export default function RootLayout({
         />
         {/* Structured Data - Game */}
         <script
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -157,6 +159,7 @@ export default function RootLayout({
         />
         {/* Structured Data - FAQ for Rich Snippets */}
         <script
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
@@ -175,6 +178,7 @@ export default function RootLayout({
         />
         {/* Structured Data - Organization */}
         <script
+          suppressHydrationWarning
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({

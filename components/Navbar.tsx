@@ -44,11 +44,14 @@ export function Navbar() {
       <DailyQuestsModal isOpen={questsOpen} onClose={() => setQuestsOpen(false)} />
       <header className="relative z-[2000] mx-auto flex w-full max-w-[1600px] items-center justify-between px-10 py-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-4 group">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#c4b5e0] to-[#9d8bc7] shadow-soft flex items-center justify-center text-white font-bold text-3xl group-hover:scale-105 transition-transform">
-            {language === "en" ? "W" : "K"}
-          </div>
-          <span className="text-2xl font-bold text-[#6b5b8a] hidden sm:inline">{t("Günlük Kelime", "Daily Word")}</span>
+        <Link href="/" className="flex items-center gap-2 group flex-shrink-0" style={{ minWidth: '200px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.svg?v=5"
+            alt={t("Günlük Kelime", "Daily Word")}
+            style={{ height: '48px', width: 'auto', minWidth: '200px' }}
+            className="group-hover:scale-105 transition-transform"
+          />
         </Link>
 
         {/* Main Nav */}
