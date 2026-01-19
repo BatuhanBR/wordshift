@@ -5,48 +5,48 @@ import { Navbar } from "@/components/Navbar";
 import { HomeLeaderboard } from "@/components/HomeLeaderboard";
 import { DailyModesSection } from "@/components/DailyModesSection";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Sparkles, Globe, Smartphone, Swords } from "lucide-react";
+import { Sparkles, Swords, Trophy, Target } from "lucide-react";
 
 export default function HomeClient() {
     const { t, language } = useLanguage();
 
     const features = language === "en" ? [
         {
-            t: "English Support",
-            d: "Full English word lists with QWERTY keyboard.",
-            icon: <Globe className="h-6 w-6 text-white" />,
-            gradient: "from-[#8fbc8f] to-[#6a9a6a]"
-        },
-        {
-            t: "Smooth Animations",
-            d: "Flip, reveal animations and smooth transitions.",
-            icon: <Sparkles className="h-6 w-6 text-white" />,
+            t: "Daily Challenges",
+            d: "New puzzle every day. Compete globally and climb the leaderboard!",
+            icon: <Trophy className="h-6 w-6 text-white" />,
             gradient: "from-[#f9c784] to-[#e5a855]"
         },
         {
-            t: "PWA Ready",
-            d: "Add to home screen, offline play, fast loading (soon).",
-            icon: <Smartphone className="h-6 w-6 text-white" />,
-            gradient: "from-[#a7c7e7] to-[#7ba7d1]"
+            t: "1v1 Multiplayer",
+            d: "Challenge friends in real-time word battles. Prove who's the word master!",
+            icon: <Swords className="h-6 w-6 text-white" />,
+            gradient: "from-[#c4b5e0] to-[#9d8bc7]"
+        },
+        {
+            t: "Track Your Progress",
+            d: "Complete quests, earn rewards, and watch your ELO rating grow!",
+            icon: <Target className="h-6 w-6 text-white" />,
+            gradient: "from-[#8fbc8f] to-[#6a9a6a]"
         }
     ] : [
         {
-            t: "Türkçe Desteği",
-            d: "ç, ğ, ı, İ, ö, ş, ü harfleri ve TR klavye uyumu.",
-            icon: <Globe className="h-6 w-6 text-white" />,
-            gradient: "from-[#8fbc8f] to-[#6a9a6a]"
-        },
-        {
-            t: "Akıcı Animasyonlar",
-            d: "Flip, sırayla açılma ve yakında paylaşım karosu animasyonları.",
-            icon: <Sparkles className="h-6 w-6 text-white" />,
+            t: "Günlük Bulmaca",
+            d: "Her gün yeni bir kelime. Küresel sıralamada yarış, zirveye çık!",
+            icon: <Trophy className="h-6 w-6 text-white" />,
             gradient: "from-[#f9c784] to-[#e5a855]"
         },
         {
-            t: "PWA Hazırlığı",
-            d: "Ana ekrana ekle, offline çalışma ve hızlı açılış (yakında).",
-            icon: <Smartphone className="h-6 w-6 text-white" />,
-            gradient: "from-[#a7c7e7] to-[#7ba7d1]"
+            t: "1v1 Multiplayer",
+            d: "Arkadaşlarına meydan oku, gerçek zamanlı kelime düellosunda yarış!",
+            icon: <Swords className="h-6 w-6 text-white" />,
+            gradient: "from-[#c4b5e0] to-[#9d8bc7]"
+        },
+        {
+            t: "Gelişimini Takip Et",
+            d: "Görevleri tamamla, ödüller kazan, ELO puanını yükselt!",
+            icon: <Target className="h-6 w-6 text-white" />,
+            gradient: "from-[#8fbc8f] to-[#6a9a6a]"
         }
     ];
 

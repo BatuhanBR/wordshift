@@ -399,74 +399,98 @@ export function MultiplayerBoard({ roomId, playerId, onGameEnd }: MultiplayerBoa
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl mx-auto">
-      {/* My Board */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-white">🎮 Sen</h3>
-          <div className={cn(
-            "px-4 py-2 rounded-full font-bold text-lg",
-            timeLeft > 60 ? "bg-green-500/20 text-green-400 border border-green-500/30" :
-              timeLeft > 30 ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" :
-                "bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse"
-          )}>
-            ⏱️ {formatTime(timeLeft)}
+    <div className="w-full max-w-6xl mx-auto space-y-6">
+      {/* Timer - Centered at top */}
+      <div className="flex justify-center">
+        <div className={cn(
+          "px-6 py-3 rounded-2xl font-bold text-xl shadow-soft",
+          timeLeft > 60 ? "bg-gradient-to-r from-[#8fbc8f] to-[#6a9a6a] text-white" :
+            timeLeft > 30 ? "bg-gradient-to-r from-[#f9c784] to-[#e5a855] text-white" :
+              "bg-gradient-to-r from-[#e57373] to-[#c62828] text-white animate-pulse"
+        )}>
+          ⏱️ {formatTime(timeLeft)}
+        </div>
+      </div>
+
+      {/* Game Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-4 lg:gap-8 items-start">
+        {/* My Board */}
+        <div className="bg-white/80 backdrop-blur-sm border border-[#e8e0d5] rounded-2xl p-6 shadow-soft">
+          {/* Player Header */}
+          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[#e8e0d5]">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8fbc8f] to-[#6a9a6a] shadow-soft flex items-center justify-center">
+              <span className="text-white text-lg">🎮</span>
+            </div>
+            <div>
+              <h3 className="font-bold text-[#4a4a4a]">Sen</h3>
+              <p className="text-xs text-[#7a7a7a]">Tahmin: {currentRow}/6</p>
+            </div>
+          </div>
+
+          {/* Game Grid */}
+          <div className="grid gap-2 mb-4">
+            {rows.map((letters, i) => (
+              <div key={i} className={shakeRow === i ? "row-shake" : undefined}>
+                <Row letters={letters} states={rowStates[i]} wordLength={wordLength} />
+              </div>
+            ))}
+          </div>
+
+          {/* Powerups */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => handlePowerup("hint")}
+              disabled={hintsUsed >= 1}
+              className={`flex-1 border-2 rounded-xl py-2.5 font-bold text-xs flex items-center justify-center gap-1 transition active:scale-95 ${hintsUsed >= 1
+                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                : "bg-white border-orange-200 hover:bg-orange-50 text-orange-600"
+                }`}
+            >
+              <span>🔍 İpucu</span>
+              <span className="bg-orange-100 text-orange-700 px-1.5 rounded-full text-[10px]">
+                {userData?.inventory?.powerups?.hint || 0}
+              </span>
+            </button>
+            <button
+              onClick={() => handlePowerup("eliminate")}
+              disabled={eliminatesUsed >= 1}
+              className={`flex-1 border-2 rounded-xl py-2.5 font-bold text-xs flex items-center justify-center gap-1 transition active:scale-95 ${eliminatesUsed >= 1
+                ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                : "bg-white border-purple-200 hover:bg-purple-50 text-purple-600"
+                }`}
+            >
+              <span>🧹 Eleme</span>
+              <span className="bg-purple-100 text-purple-700 px-1.5 rounded-full text-[10px]">
+                {userData?.inventory?.powerups?.eliminate || 0}
+              </span>
+            </button>
+          </div>
+
+          {/* Keyboard */}
+          <Keyboard onKey={onKey} letterHints={letterHints} disabledLetters={eliminatedLetters} />
+        </div>
+
+        {/* VS Indicator - Center */}
+        <div className="hidden lg:flex flex-col items-center justify-center py-8">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#c4b5e0] to-[#9d8bc7] shadow-soft flex items-center justify-center">
+            <span className="text-white font-bold text-xl">VS</span>
           </div>
         </div>
 
-        <div className="grid gap-2">
-          {rows.map((letters, i) => (
-            <div key={i} className={shakeRow === i ? "row-shake" : undefined}>
-              <Row letters={letters} states={rowStates[i]} wordLength={wordLength} />
-            </div>
-          ))}
+        {/* Opponent Board */}
+        <div className="bg-white/80 backdrop-blur-sm border border-[#e8e0d5] rounded-2xl p-6 shadow-soft">
+          <OpponentBoard
+            progress={opponentProgress}
+            wordLength={wordLength}
+            opponentName={opponent?.displayName || "Rakip"}
+          />
         </div>
-
-        <div className="flex gap-2 mb-2 px-2">
-          <button
-            onClick={() => handlePowerup("hint")}
-            disabled={hintsUsed >= 1}
-            className={`flex-1 border-2 rounded-xl py-2 font-bold text-xs flex items-center justify-center gap-1 transition active:scale-95 ${hintsUsed >= 1
-              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-              : "bg-white border-orange-200 hover:bg-orange-50 text-orange-600"
-              }`}
-          >
-            <span>🔍 İpucu</span>
-            <span className="bg-orange-100 text-orange-700 px-1.5 rounded-full text-[10px]">
-              {userData?.inventory?.powerups?.hint || 0}
-            </span>
-          </button>
-          <button
-            onClick={() => handlePowerup("eliminate")}
-            disabled={eliminatesUsed >= 1}
-            className={`flex-1 border-2 rounded-xl py-2 font-bold text-xs flex items-center justify-center gap-1 transition active:scale-95 ${eliminatesUsed >= 1
-              ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-              : "bg-white border-purple-200 hover:bg-purple-50 text-purple-600"
-              }`}
-          >
-            <span>🧹 Eleme</span>
-            <span className="bg-purple-100 text-purple-700 px-1.5 rounded-full text-[10px]">
-              {userData?.inventory?.powerups?.eliminate || 0}
-            </span>
-          </button>
-        </div>
-
-        <Keyboard onKey={onKey} letterHints={letterHints} disabledLetters={eliminatedLetters} />
-      </div>
-
-      {/* Opponent Board */}
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-        <OpponentBoard
-          progress={opponentProgress}
-          wordLength={wordLength}
-          opponentName={opponent?.displayName || "Rakip"}
-        />
       </div>
 
       {/* Message */}
       {message && (
         <div className="fixed right-6 bottom-16 z-[2000]">
-          <div className="rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 backdrop-blur-xl px-5 py-3 text-base text-white shadow-2xl font-semibold">
+          <div className="rounded-xl border border-[#c4b5e0] bg-white/90 backdrop-blur-sm px-5 py-3 text-base text-[#4a4a4a] shadow-soft font-semibold">
             {message}
           </div>
         </div>
