@@ -93,6 +93,10 @@ export async function getWordsForLength(len: number, lang: Language = "tr"): Pro
         words = remote.length > 0 ? remote : [...getValidListByLength(len)];
     }
 
+    // CRITICAL: Sort words alphabetically to ensure consistent order across all clients/servers
+    // This is required for seeded random selection (pickByDay) to work correctly for everyone.
+    words.sort((a, b) => a.localeCompare(b, lang === "tr" ? "tr" : "en"));
+
     cache.set(len, { words, ts: now });
     return words;
 }

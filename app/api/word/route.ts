@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getWordsForLength } from "@/lib/words/provider";
-import { getUtcDayIndex } from "@/lib/game/seed";
+import { getUtcDayIndex, pickByDay } from "@/lib/game/seed";
 
 export async function GET(request: Request) {
     const url = new URL(request.url);
@@ -18,7 +18,10 @@ export async function GET(request: Request) {
         return NextResponse.json({ word, index: idx, len, mode, lang });
     }
 
-    const idx = ((day % base.length) + base.length) % base.length;
-    const word = base[idx];
+    // Use seeded random picker
+    const word = pickByDay(base, day);
+    // Reverse find index just for info (optional)
+    const idx = base.indexOf(word);
+
     return NextResponse.json({ word, index: idx, day, len, mode: "daily", lang });
 }

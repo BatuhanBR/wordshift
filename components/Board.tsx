@@ -604,7 +604,12 @@ export function Board({ initialLen, modeType = "daily" }: { initialLen?: number;
             if (dailyHistory?.date === todayStr && dailyHistory?.modes?.[wordLength]) {
                 const stats = dailyHistory.stats?.[wordLength] || { guesses: 0, durationMs: 0, solution: "GİZLİ", won: false, lastGuess: "" };
                 setDailyStats(stats as any);
+            } else {
+                // CRITICAL: Reset stats if not played today/this mode
+                setDailyStats(null);
             }
+        } else {
+            setDailyStats(null);
         }
     }, [modeType, userData, wordLength]);
 
